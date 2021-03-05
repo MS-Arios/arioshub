@@ -3,8 +3,8 @@ const { PUBLIC_KEY } = require("../app/config");
 
 const md5password = require("../utils/password-handle");
 const errorTypes = require("../constants/error.types");
-const service = require("../service/user.service");
-const authRouter = require("../router/auth.router");
+const userService = require("../service/user.service");
+const authService = require("../service/auth.service");
 
 // 验证登录是否成功的中间件middleware
 const verifyLogin = async (ctx, next) => {
@@ -19,7 +19,7 @@ const verifyLogin = async (ctx, next) => {
   }
 
   // 3.判断用户是否存在(通过数据库)
-  const result = await service.getUserName(username);
+  const result = await userService.getUserName(username);
   // 将数据库从查询到的用户信息保存
   const user = result[0];
   console.log(user);
@@ -64,7 +64,34 @@ const verifyAuth = async (ctx, next) => {
   }
 };
 
+/**
+ * 1.很多的内容都需要修改权限: 修改/删除动态,  修改/删除评论
+ * 2.接口: 业务接口/后端管理系统
+ *  一对一: user => role
+ *  多对多: role => menu(删除动态/修改动态)
+ */
+
+// 验证是否具有权限
+const verifyPromisstion = async (ctx, next) => {
+  console.log("验证权限的middleware");
+
+  // 获取动态的momentId
+  const { momentId } = ctx.params;
+  // 获取用户的id
+  const { id: userId } = ctx.user;
+  // 验证权限
+  const isPermisstion = await authService.authMoment(momentId, userId);
+
+  if (!isPermisstion) {
+    const err = new Error(errorTypes.UNPERMISSTION);
+    return ctx.app.emit("error", err, ctx);
+  }
+
+  await next();
+};
+
 module.exports = {
   verifyLogin,
   verifyAuth,
+  verifyPromisstion,
 };
