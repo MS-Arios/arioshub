@@ -75,12 +75,19 @@ const verifyAuth = async (ctx, next) => {
 const verifyPromisstion = async (ctx, next) => {
   console.log("验证权限的middleware");
 
-  // 获取动态的momentId
-  const { momentId } = ctx.params;
+  // 获取参数
+  const [resourceKey] = Object.keys(ctx.params);
+  const tableName = resourceKey.replace("Id", "");
+  // 获取参数的id
+  const resourceId = ctx.params[resourceKey];
   // 获取用户的id
   const { id: userId } = ctx.user;
   // 验证权限
-  const isPermisstion = await authService.authMoment(momentId, userId);
+  const isPermisstion = await authService.checkResource(
+    tableName,
+    resourceId,
+    userId
+  );
 
   if (!isPermisstion) {
     const err = new Error(errorTypes.UNPERMISSTION);
@@ -89,6 +96,27 @@ const verifyPromisstion = async (ctx, next) => {
 
   await next();
 };
+
+// 通过闭包的形式:   调用时verifyPromisstion(tableName)
+// const verifyPromisstion = (tableName) => {
+//   return async (ctx, next) => {
+//     console.log("验证权限的middleware");
+
+//     // 获取动态的momentId
+//     const { momentId } = ctx.params;
+//     // 获取用户的id
+//     const { id: userId } = ctx.user;
+//     // 验证权限
+//     const isPermisstion = await authService.check(tableName, momentId, userId);
+
+//     if (!isPermisstion) {
+//       const err = new Error(errorTypes.UNPERMISSTION);
+//       return ctx.app.emit("error", err, ctx);
+//     }
+
+//     await next();
+//   };
+// };
 
 module.exports = {
   verifyLogin,
