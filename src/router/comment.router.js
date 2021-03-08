@@ -9,6 +9,7 @@ const {
   reply,
   update,
   remove,
+  list,
 } = require("../controller/comment.controller");
 
 const commentRouter = new Router({ prefix: "/comment" });
@@ -22,5 +23,8 @@ commentRouter.post("/:commentId/reply", verifyAuth, reply);
 commentRouter.patch("/:commentId", verifyAuth, verifyPromisstion, update);
 // 删除评论
 commentRouter.delete("/:commentId", verifyAuth, verifyPromisstion, remove);
+
+// 获取评论
+commentRouter.get("/", list);
 
 module.exports = commentRouter;

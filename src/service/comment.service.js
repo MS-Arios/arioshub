@@ -35,7 +35,21 @@ class CommentService {
   // 删除评论
   async remove(commentId) {
     const statement = ` DELETE FROM comment WHERE id = ?; `;
-    const result = await connection.execute(statement, [commentId]);
+    const [result] = await connection.execute(statement, [commentId]);
+    return result;
+  }
+
+  // 根据momentId获取评论信息-单独的接口
+  async getCommentsByMomentId(momentId) {
+    const statement = ` 
+    SELECT 
+	    c.id, c.content, c.comment_id AS commentId, c.createAt AS createTime,
+      JSON_OBJECT('id', u.id, 'name', u.name) AS user
+    FROM comment AS c
+    LEFT JOIN users AS u ON u.id = c.user_id 
+    WHERE c.moment_id = 1;
+    `;
+    const [result] = await connection.execute(statement, [momentId]);
     return result;
   }
 }

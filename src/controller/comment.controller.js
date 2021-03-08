@@ -50,6 +50,15 @@ class CommentController {
     const result = await commentService.remove(commentId);
     ctx.body = "删除评论成功~";
   }
+
+  // 获取评论
+  async list(ctx, next) {
+    console.log(ctx.query);
+    const { momentId } = ctx.query;
+
+    const result = await commentService.getCommentsByMomentId(momentId);
+    ctx.body = result;
+  }
 }
 
 module.exports = new CommentController();
