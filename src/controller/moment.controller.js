@@ -1,4 +1,3 @@
-const authService = require("../service/auth.service");
 const momentService = require("../service/moment.service");
 
 class momentController {
@@ -49,6 +48,17 @@ class momentController {
     const result = await momentService.remove(momentId);
 
     ctx.body = "删除动态成功";
+  }
+
+  // 给动态添加标签
+  async addLabels(ctx, next) {
+    // 1.获取标签和动态id
+    const { labels } = ctx;
+    const { momentId } = ctx.params;
+
+    // 2.添加所有的标签
+    // console.log(labels);
+    ctx.body = "成功了吗马上的啊 ";
   }
 }
 

@@ -43,7 +43,7 @@ const verifyLogin = async (ctx, next) => {
 // 验证授权的中间件middleware
 const verifyAuth = async (ctx, next) => {
   console.log("验证授权的中间件middleware");
-
+  
   const authorization = ctx.headers.authorization;
   if (!authorization) {
     const err = new Error(errorTypes.UNAHORIZATION);
