@@ -1,3 +1,4 @@
+const labelService = require("../service/label.service");
 const momentService = require("../service/moment.service");
 
 class momentController {
@@ -55,10 +56,18 @@ class momentController {
     // 1.获取标签和动态id
     const { labels } = ctx;
     const { momentId } = ctx.params;
+    // console.log(labels);
 
     // 2.添加所有的标签
-    // console.log(labels);
-    ctx.body = "成功了吗马上的啊 ";
+    for (let label of labels) {
+      // 2.1先判断moment_label数据表中是否有这个标签
+      const isExists = await labelService.hasLabel(label.id, momentId);
+      if (!isExists) {
+        // 2.2如果没有则添加到moment_label数据表中
+        await labelService.addLabel(label.id, momentId);
+      }
+    }
+    ctx.body = "给动态添加标签成功~";
   }
 }
 
